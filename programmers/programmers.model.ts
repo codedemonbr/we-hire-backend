@@ -1,78 +1,64 @@
-const programmers = [
-    {
-        id: '1',
-        name: 'Thiago Henrique',
-        lastName: 'Santos',
-        telephone: '5511986082341',
-        email: 'henrique.thsantos.ths@gmail.com',
-        tecnologies: [
-            {
-                name: 'Javascript',
-                type: 'language',
-            },
-            {
-                name: 'Python',
-                type: 'language',
-            },
-            {
-                name: 'C++',
-                type: 'language',
-            },
-            {
-                name: 'restify',
-                type: 'framework',
-            },
-            {
-                name: 'MongoDB',
-                type: 'database',
-            },
-        ],
-    },
-    {
-        id: '2',
-        name: 'Paulo',
-        lastName: 'Silva',
-        telephone: '5511999888333',
-        email: 'paulos@gmail.com',
-        tecnologies: [
-            {
-                name: 'Java',
-                type: 'language',
-            },
-            {
-                name: 'SQL',
-                type: 'language',
-            },
-            {
-                name: 'C',
-                type: 'language',
-            },
-            {
-                name: 'express',
-                type: 'framework',
-            },
-            {
-                name: 'MySQL',
-                type: 'database',
-            },
-        ],
-    },
-];
+import * as mongoose from 'mongoose';
 
-export class Programmer {
-    static findAll(): Promise<any[]> {
-        return Promise.resolve(programmers);
-    }
-
-    static findById(id: string): Promise<any> {
-        return new Promise((resolve) => {
-            const filtered = programmers.filter((user) => user.id === id);
-
-            let programmer = undefined;
-            if (filtered.length > 0) {
-                programmer = filtered[0];
-            }
-            resolve(programmer);
-        });
-    }
+export interface TecnologyItem extends mongoose.Document {
+    name: string;
+    kind: string;
 }
+
+export interface Programmer extends mongoose.Document {
+    name: string;
+    lastName: string;
+    telephone: string;
+    email: string;
+    tecnologies: TecnologyItem[];
+}
+
+const tecnologySchema = new mongoose.Schema({
+    name: {
+        type: String,
+        maxLength: 15,
+        required: true,
+    },
+    kind: {
+        type: String,
+        enum: ['language', 'framework', 'tool'],
+        required: true,
+    },
+});
+
+const programmerSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        maxLength: 36,
+        minLength: 2,
+    },
+    lastName: {
+        type: String,
+        maxLength: 12,
+        minlength: 2,
+        required: true,
+    },
+    telephone: {
+        type: String,
+        minLength: 11,
+        required: false,
+        unique: true,
+        match: /\(\d{2}\)\s\d{4,5}\-\d{4}/,
+    },
+    email: {
+        type: String,
+        unique: true,
+        required: true,
+        match: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    },
+    tecnologies: {
+        type: [tecnologySchema],
+        required: false,
+    },
+});
+
+export const Programmer = mongoose.model<Programmer>(
+    'Programmer',
+    programmerSchema
+);

@@ -5,7 +5,7 @@ import * as restify from 'restify';
 class ProgrammersRouter extends Router {
     applyRoutes(application: restify.Server) {
         application.get('/programmers', (req, res, next) => {
-            Programmer.findAll().then((users) => {
+            Programmer.find().then((users) => {
                 res.json(users);
                 return next();
             });
@@ -18,6 +18,14 @@ class ProgrammersRouter extends Router {
                     return next();
                 }
                 res.send(404);
+                return next();
+            });
+        });
+
+        application.post('/programmers', (req, res, next) => {
+            let programmer = new Programmer(req.body);
+            programmer.save().then((programmer) => {
+                res.json(programmer);
                 return next();
             });
         });
