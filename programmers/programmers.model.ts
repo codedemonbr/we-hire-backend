@@ -1,5 +1,6 @@
 const programmers = [
     {
+        id: '1',
         name: 'Thiago Henrique',
         lastName: 'Santos',
         telephone: '5511986082341',
@@ -28,6 +29,7 @@ const programmers = [
         ],
     },
     {
+        id: '2',
         name: 'Paulo',
         lastName: 'Silva',
         telephone: '5511999888333',
@@ -60,5 +62,17 @@ const programmers = [
 export class Programmer {
     static findAll(): Promise<any[]> {
         return Promise.resolve(programmers);
+    }
+
+    static findById(id: string): Promise<any> {
+        return new Promise((resolve) => {
+            const filtered = programmers.filter((user) => user.id === id);
+
+            let programmer = undefined;
+            if (filtered.length > 0) {
+                programmer = filtered[0];
+            }
+            resolve(programmer);
+        });
     }
 }

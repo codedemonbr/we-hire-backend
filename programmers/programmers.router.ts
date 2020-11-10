@@ -10,6 +10,17 @@ class ProgrammersRouter extends Router {
                 return next();
             });
         });
+
+        application.get('/programmers/:id', (req, res, next) => {
+            Programmer.findById(req.params.id).then((programmer) => {
+                if (programmer) {
+                    res.json(programmer);
+                    return next();
+                }
+                res.send(404);
+                return next();
+            });
+        });
     }
 }
 
